@@ -52,7 +52,13 @@ export class Product {
             .replaceAll("'", '')
     }
 
-    //@BeforeUpdate()
+    @BeforeUpdate()
+    slugUpdate() {
+        this.slug = this.slug
+            .toLowerCase()
+            .replaceAll(' ', '_')
+            .replaceAll("'", '')
+    }
 
 
 }
