@@ -39,7 +39,7 @@ export class ProductsService {
   }
 
   findAll(paginationDTO: PaginationDTO) {
-    const { limit = 10, offset = 0} = paginationDTO
+    const { limit = 10, offset = 0 } = paginationDTO
 
 
     return this.productRepository.find({
@@ -49,28 +49,32 @@ export class ProductsService {
   }
 
   async findOne(term: string) {
-    
-    let product : Product | null
 
-    if ( IsUUID(term) ) {
-       product = await this.productRepository.findOneBy({id: term})
-    }else{
-      product = await this.productRepository.findOneBy({slug: term})
+    let product: Product | null
+
+    if (IsUUID(term)) {
+      product = await this.productRepository.findOneBy({ id: term })
+    } else {
+      product = await this.productRepository
+        .createQueryBuilder('product')
+        .where('product.title = :term OR product.slug = :term', { term })
+        .getOne()
     }
-    
-    //let product = await this.productRepository.findOneBy({id: term})
 
-    if(!product) throw new NotFoundException(`product with id ${term} not found`)
+    if (!product) {
+      throw new NotFoundException(`product with id ${term} not found`)
+    }
 
     return product
   }
+
 
   update(id: number, updateProductDto: UpdateProductDto) {
     return `This action updates a #${id} product`;
   }
 
   async remove(id: string) {
-    
+
     const product = await this.findOne(id)
     await this.productRepository.remove(product)
     return {
