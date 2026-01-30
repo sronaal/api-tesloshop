@@ -14,7 +14,7 @@ export class Product {
     @Column('float', {
         default: 0
     })
-    precio: number
+    price: number
 
     @Column({
         type: 'text',
