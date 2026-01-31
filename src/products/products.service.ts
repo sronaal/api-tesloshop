@@ -74,14 +74,26 @@ export class ProductsService {
       product = await this.productRepository
         .createQueryBuilder('product')
         .where('product.title = :term OR product.slug = :term', { term })
+        .leftJoinAndSelect('product.images', 'prodImages')
         .getOne()
+        
     }
 
     if (!product) {
       throw new NotFoundException(`product with id ${term} not found`)
     }
 
-    return product
+    return product 
+  }
+
+
+  async findOnePlain(term: string){
+    const { images = [], ...rest } = await this.findOne(term)
+
+    return {
+      ...rest,
+      images: images.map( image => image.url)
+    }
   }
 
 
