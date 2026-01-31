@@ -1,11 +1,19 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Product } from ".";
 
 @Entity()
-export class ProductImage{
+export class ProductImage {
 
     @PrimaryGeneratedColumn('uuid')
     id: number
 
     @Column('text')
     url: string
+
+    @ManyToOne(
+        () => Product,
+        (product) => product.images,
+        { cascade: true }
+    )
+    product: Product
 }
