@@ -21,13 +21,13 @@ export class ProductsService {
   ) { }
 
   async create(createProductDto: CreateProductDto) {
-    const product = new Product()
+    let product = new Product()
 
     try {
 
       const { images = [], ...productDetails } = createProductDto
       // Crea una instacia de tipo producto
-      const product = this.productRepository.create({
+      product = this.productRepository.create({
         ...productDetails,
         images: images.map( image =>  this.productImageRepositoty.create({url: image}))
 
@@ -36,7 +36,7 @@ export class ProductsService {
       // Grabar en la base de datos
       await this.productRepository.save(product)
 
-      return product
+      return {...product, images}
     } catch (error) {
 
       this.handleExeptions(error)
@@ -46,14 +46,22 @@ export class ProductsService {
 
   }
 
-  findAll(paginationDTO: PaginationDTO) {
+  async findAll(paginationDTO: PaginationDTO) {
     const { limit = 10, offset = 0 } = paginationDTO
 
 
-    return this.productRepository.find({
+    const products =  await  this.productRepository.find({
       take: limit,
-      skip: offset
+      skip: offset,
+      relations: {
+        images: true
+      }
     })
+
+    return products.map( product => ( {
+      ...product, 
+      images: product.images?.map( img => img.url)
+    }))
   }
 
   async findOne(term: string) {
