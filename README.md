@@ -12,3 +12,7 @@
 docker-compose up -d
 ```
 6. Levantar Servidor: ``` yarn start:dev```
+7. Ejecutar Seed para llenar base de datos
+```
+http://localhost:3000/api/seed
+```
