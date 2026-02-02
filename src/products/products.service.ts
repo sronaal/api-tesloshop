@@ -129,7 +129,7 @@ export class ProductsService {
       await queryRunner.release()
 
       //await this.productRepository.save(product)
-      return product
+      return this.findOnePlain(id)
 
     } catch (error) {
 
