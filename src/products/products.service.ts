@@ -119,8 +119,8 @@ export class ProductsService {
 
       if (images) {
         await queryRunner.manager.delete(ProductImage, { product: { id } })
-        
-        product.images = images.map( image => this.productImageRepositoty.create({url: image}) )
+
+        product.images = images.map(image => this.productImageRepositoty.create({ url: image }))
       }
 
       await queryRunner.manager.save(product)
@@ -148,6 +148,27 @@ export class ProductsService {
       id
     }
   }
+
+
+  async deleteAllProducts() {
+    const queryRunner = this.dataSource.createQueryRunner()
+    await queryRunner.connect()
+    await queryRunner.startTransaction()
+
+    try {
+      await queryRunner.manager.delete(ProductImage, {})
+      await queryRunner.manager.delete(Product, {})
+
+      await queryRunner.commitTransaction()
+    } catch (error) {
+      await queryRunner.rollbackTransaction()
+      this.handleExeptions(error)
+    } finally {
+      await queryRunner.release()
+    }
+  }
+
+
 
   private handleExeptions(error: any) {
     if (error.code === '23505') {
