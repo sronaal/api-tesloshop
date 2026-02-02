@@ -149,15 +149,23 @@ export class ProductsService {
     }
   }
 
-
   async deleteAllProducts() {
     const queryRunner = this.dataSource.createQueryRunner()
     await queryRunner.connect()
     await queryRunner.startTransaction()
 
     try {
-      await queryRunner.manager.delete(ProductImage, {})
-      await queryRunner.manager.delete(Product, {})
+      await queryRunner.manager
+        .createQueryBuilder()
+        .delete()
+        .from(ProductImage)
+        .execute()
+
+      await queryRunner.manager
+        .createQueryBuilder()
+        .delete()
+        .from(Product)
+        .execute()
 
       await queryRunner.commitTransaction()
     } catch (error) {
@@ -167,6 +175,8 @@ export class ProductsService {
       await queryRunner.release()
     }
   }
+
+
 
 
 
