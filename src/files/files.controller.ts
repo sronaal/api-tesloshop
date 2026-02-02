@@ -4,12 +4,16 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { fileFilter, fileNamer } from './helpers/';
 import { diskStorage } from 'multer';
 import { type Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 
 
 @Controller('files')
 export class FilesController {
-  constructor(private readonly filesService: FilesService) { }
+  constructor(
+    private readonly filesService: FilesService,
+    private readonly configService: ConfigService
+  ) { }
 
 
   @Post('product')
@@ -28,9 +32,9 @@ export class FilesController {
     if (!file) { throw new BadRequestException('File is empty') }
 
     console.log(file)
-    const secureURL = `${file.filename}`
+    const secureURL = `${this.configService.get('HOST_API')}/files/product/${file.filename}`
 
-    return file
+    return secureURL
   }
 
   @Get('product/:imageName')
